@@ -39,5 +39,5 @@ class RecongnizedFacesService():
 
     def createRecognizedFacesDir(self):
         if not exists(self.registred_faces_dir):
-            # mkdir(self.current_dir + "\\data")
+            mkdir(self.current_dir + "\\data")
             mkdir(self.registred_faces_dir)
