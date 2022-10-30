@@ -4,13 +4,28 @@ class CameraManagerService():
 
     def __init__(self):
         self.__camera = cv.VideoCapture(0, cv.CAP_DSHOW)
-        self.frame
-        self.frame_small
+        self.frame = []
+        self.frame_small = []
 
-    def initializeCamera(self):
+    def initializeCamera(self, windowName):
         self.frame = self.__camera.read()[1]
         self.frame_small = cv.resize(self.frame, (0,0), fx=0.25, fy=0.25)
-        return cv.waitKey(60) == 27
+        cv.imshow(windowName, self.frame_small)
+
+    def startCamera(self, windowName):
+        self.initializeCamera(windowName)
+        k = cv.waitKey(60)
+        return k == 27
+
+    def takePhoto(self):
+        self.initializeCamera("Press (S) to registre a photo")
+        k = cv.waitKey(60)
+        if k == ord('s'):
+            return self.frame
+    
+    def closeCamera(self):
+        self.__camera.release()        
+        cv.destroyAllWindows()
 
     def drawIdenficationOnFrame(self, captured_face_locations, captured_faces_names):
         for (top, right, bottom, left), name in zip(captured_face_locations, captured_faces_names):

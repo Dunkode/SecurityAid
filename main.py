@@ -1,12 +1,13 @@
 from os import system
 from time import sleep
-
+from src.cameraManagerService import CameraManagerService
 from src.recognizedFacesService import RecongnizedFacesService
+
+recognizedFacesServ = RecongnizedFacesService()
+camService = CameraManagerService()
 
 while True:
     system('cls')
-
-    recognizedFacesServ = RecongnizedFacesService()
 
     print("{:-^40}".format("SecurityAid"))
 
@@ -22,12 +23,23 @@ while True:
         match choice:
             case 0:
                 quit()
+
             case 1:
-                pass
+                while True:
+                    img = camService.takePhoto()
+                    if img != None:
+                        print("pingas")
+                        
+                        camService.closeCamera()
+                        break
             case 2:
                 print(recognizedFacesServ.getAuthorizedFaces())
                 pass
             
+                # while True:
+                #     if camService.startCamera():
+                #         camService.closeCamera()
+                #         break
         sleep(3)
         
     except ValueError:
