@@ -1,7 +1,7 @@
 from os import path, getcwd, mkdir
 from os.path import join, exists
 from glob import glob
-
+from cv2 import imwrite
 EXTENSION_FILES = ["png", "jpeg", "jpg"]
 
 class RecongnizedFacesService():
@@ -36,6 +36,11 @@ class RecongnizedFacesService():
                 name = file.replace(self.registred_faces_dir, "").replace(f".{ext}")
             
             self.__list_of_names.append(name)
+
+    def saveTakedPhoto(self, frame):
+        name = input("Insira o nome de registro: ")
+        imwrite(join(self.registred_faces_dir, name + ".jpg"), frame)
+        
 
     def createRecognizedFacesDir(self):
         if not exists(self.registred_faces_dir):

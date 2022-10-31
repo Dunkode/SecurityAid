@@ -20,8 +20,7 @@ class CameraManagerService():
     def takePhoto(self):
         self.initializeCamera("Press (S) to registre a photo")
         k = cv.waitKey(60)
-        if k == ord('s'):
-            return self.frame
+        return self.frame if k == ord('s') else None
     
     def closeCamera(self):
         self.__camera.release()        

@@ -28,9 +28,9 @@ while True:
                 while True:
                     img = camService.takePhoto()
                     if img != None:
-                        print("pingas")
-                        
                         camService.closeCamera()
+                        recognizedFacesServ.saveTakedPhoto(img)                        
+                        print("Nova face registrada com sucesso!")
                         break
             case 2:
                 print(recognizedFacesServ.getAuthorizedFaces())
