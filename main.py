@@ -66,6 +66,5 @@ while True:
             #         camService.closeCamera()
             #         break
     sleep(3)
-        
     # except ValueError:
         # print("Digite uma opção válida!")

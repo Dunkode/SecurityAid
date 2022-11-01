@@ -35,7 +35,7 @@ class RecognizerService():
             best_match_index = np.argmin(face_distances)
             
             if matches[best_match_index]:
-                name = self.__registred_faces_encodings[best_match_index]
+                name = self.__registred_faces_names[best_match_index]
             
             self.__captured_faces_names.append(name)
 

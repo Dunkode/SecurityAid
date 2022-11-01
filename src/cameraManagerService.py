@@ -3,13 +3,17 @@ import cv2 as cv
 class CameraManagerService():
 
     def __init__(self):
-        self.__camera = cv.VideoCapture(0, cv.CAP_DSHOW)
         self.frame = []
         self.frame_small = []
+        self.__connectCamera = True
 
     def initializeCamera(self, windowName):
+        if self.__connectCamera:
+            self.__camera = cv.VideoCapture(0, cv.CAP_DSHOW)
+
         self.frame = self.__camera.read()[1]
         self.frame_small = cv.resize(self.frame, (0,0), fx=0.25, fy=0.25)
+        self.__connectCamera = False
         cv.imshow(windowName, self.frame)
 
     def startCamera(self, windowName):
@@ -25,6 +29,7 @@ class CameraManagerService():
     def closeCamera(self):
         self.__camera.release()        
         cv.destroyAllWindows()
+        self.__connectCamera = True
 
     def drawIdenficationOnFrame(self, captured_face_locations, captured_faces_names):
         for (top, right, bottom, left), name in zip(captured_face_locations, captured_faces_names):
