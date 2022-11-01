@@ -12,20 +12,16 @@ class RecongnizedFacesService():
         self.createRecognizedFacesDir()
         self.__list_of_files = []
         self.__list_of_names = []
-        self.__number_of_faces = 0
 
     def getNamesFromFaces(self):
         return self.__list_of_names
-
-    def getNumberOfFaces(self):
-        return self.__number_of_faces
 
     def getAuthorizedFaces(self):
         return self.__list_of_files
 
     def loadAutorizedFaces(self):
         for ext in EXTENSION_FILES:
-            self.__list_of_files = [ f for f in glob( path + f"*.{ext}") ]
+            self.__list_of_files = [ f for f in glob( join(self.registred_faces_dir, f"*.{ext}") ) ]
         
         self.loadNameFromFaceFiles()
 
@@ -33,14 +29,13 @@ class RecongnizedFacesService():
         for file in self.__list_of_files:
             name = ""
             for ext in EXTENSION_FILES:
-                name = file.replace(self.registred_faces_dir, "").replace(f".{ext}")
+                name = file.replace(self.registred_faces_dir, "").replace(f".{ext}", "")
             
             self.__list_of_names.append(name)
 
     def saveTakedPhoto(self, frame):
         name = input("Insira o nome de registro: ")
         imwrite(join(self.registred_faces_dir, name + ".jpg"), frame)
-        
 
     def createRecognizedFacesDir(self):
         if not exists(self.registred_faces_dir):

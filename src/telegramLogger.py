@@ -1,9 +1,12 @@
 from requests import request
+from src.enviromentVariablesService import EnviromentVariablesService
+
+envVarServ = EnviromentVariablesService()
 
 class TelegramLogger():
 
     def __init__(self):
-        self.__bot_id = "5445658228:AAEMu1aXSOexZYrmqBj-OwVVbCftSSJHNtw"
+        self.__bot_id = envVarServ.getTokenTelegramBot()
         self.__api_url = f"https://api.telegram.org/bot{self.__bot_id}/"
         self.__last_update_id = 0 
 

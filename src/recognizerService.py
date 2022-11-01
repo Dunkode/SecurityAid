@@ -10,6 +10,12 @@ class RecognizerService():
         self.__captured_face_encondings = []
         self.__captured_faces_names = []
 
+    def getFaceLocations(self):
+        return self.__captured_face_locations
+    
+    def getFaceNames(self):
+        return self.__captured_faces_names
+
     def recognizeRegistredFaces(self, names, files):
         for i in range(len(files)):
             presets = face_recognition.load_image_file(files[i])

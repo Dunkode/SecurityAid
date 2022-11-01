@@ -10,7 +10,7 @@ class CameraManagerService():
     def initializeCamera(self, windowName):
         self.frame = self.__camera.read()[1]
         self.frame_small = cv.resize(self.frame, (0,0), fx=0.25, fy=0.25)
-        cv.imshow(windowName, self.frame_small)
+        cv.imshow(windowName, self.frame)
 
     def startCamera(self, windowName):
         self.initializeCamera(windowName)
@@ -18,9 +18,9 @@ class CameraManagerService():
         return k == 27
 
     def takePhoto(self):
-        self.initializeCamera("Press (S) to registre a photo")
+        self.initializeCamera("Press (s) to registre a photo")
         k = cv.waitKey(60)
-        return self.frame if k == ord('s') else None
+        return self.frame if k == ord('s') else False
     
     def closeCamera(self):
         self.__camera.release()        
