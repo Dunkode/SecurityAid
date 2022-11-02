@@ -7,22 +7,24 @@ class CameraManagerService():
         self.frame_small = []
         self.__connectCamera = True
 
-    def initializeCamera(self, windowName):
+    def initializeCamera(self):
         if self.__connectCamera:
             self.__camera = cv.VideoCapture(0, cv.CAP_DSHOW)
 
         self.frame = self.__camera.read()[1]
         self.frame_small = cv.resize(self.frame, (0,0), fx=0.25, fy=0.25)
         self.__connectCamera = False
-        cv.imshow(windowName, self.frame)
 
-    def startCamera(self, windowName):
-        self.initializeCamera(windowName)
+    def showFrame(self, windowName):
+        cv.imshow(windowName, self.frame)
+    
+    def needCloseByEsc(self):
         k = cv.waitKey(60)
         return k == 27
 
     def takePhoto(self):
-        self.initializeCamera("Press (s) to registre a photo")
+        self.initializeCamera()
+        self.showFrame("Press (s) to registre a photo")
         k = cv.waitKey(60)
         return self.frame if k == ord('s') else False
     
@@ -31,8 +33,8 @@ class CameraManagerService():
         cv.destroyAllWindows()
         self.__connectCamera = True
 
-    def drawIdenficationOnFrame(self, captured_face_locations, captured_faces_names):
-        for (top, right, bottom, left), name in zip(captured_face_locations, captured_faces_names):
+    def drawIdenficationOnFrame(self, captured_face_locations, captured_face_name):
+        for (top, right, bottom, left), name in zip(captured_face_locations, captured_face_name):
             top = int(top*4)
             right = int(right*4)
             bottom = int(bottom * 4)

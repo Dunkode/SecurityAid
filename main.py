@@ -47,7 +47,9 @@ while True:
             recognizerService.recognizeRegistredFaces(recognizedFacesServ.getNamesFromFaces(), recognizedFacesServ.getAuthorizedFaces())
 
             while True:
-                if camService.startCamera("Monitoring..."):
+                camService.initializeCamera()
+
+                if camService.needCloseByEsc():
                     #Fecha a camera
                     camService.closeCamera()
                     break
@@ -57,7 +59,9 @@ while True:
 
                     #Desenha o identificador no rosto identificado
                     camService.drawIdenficationOnFrame(recognizerService.getFaceLocations(), recognizerService.getFaceNames())
-
+                    
+                    #Mostra o frame desenhado
+                    camService.showFrame("Monitoring...")
 
             pass
         
