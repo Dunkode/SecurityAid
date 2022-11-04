@@ -1,48 +1,79 @@
-from os.path import join
-from os import getcwd
-import json
+from os.path import join, exists
+from os import getcwd, mkdir
+import pickle
 
+#Classe responsavel por gerenciar o arquivo de variaveis do ambiente
+#como o Token para o BOT do Telegram e os usuarios que podem
+#receber os alertas
 class EnviromentVariablesService():
     def __init__(self):
         self.__variables = None
-        self.__file_path = join(getcwd(), join("config", "env_var.json"))
+        self.__file_path = join(getcwd(), join("config", "env_var.dat"))
         self.loadEnviromentFile()
 
-    def loadEnviromentFile(self):
-        f = open(self.__file_path)    
-        dict = json.load(f)
+    #Le os dados do arquivo de variaveis e carrega na variavel
+    def loadEnviromentFile(self):          
+        dict = self.readFile()
+
         if dict == {}:
-            dict = {"TELEGRAM_BOT_KEY" : "", "users" : []}
-            json.dump(dict, f)       
+            dict = {"TELEGRAM_BOT_KEY" : "", "users" : [], "last_update_id" : ""}
+            self.writeInFile(dict)
         
-        f.close()
         self.__variables = dict
 
-    def updateUsers(self, new_user):
-        f = open(self.__file_path)        
-        try:
-            dict = json.load(f)
-            f.close()
-            
-            dict["users"].append(new_user)
-            f = open(self.__file_path, "w")
-            json.dump(dict, f)
-        finally:
-            f.close()        
-            self.loadEnviromentFile()
+    #Adiciona um novo usuario no arquivo de variaveis
+    def addNewUser(self, new_user):
+        dict = self.readFile()            
+        
+        dict["users"].append(new_user)
+        self.writeInFile(dict)
 
+        self.loadEnviromentFile()
 
-    def getTokenTelegramBot(self):
-        if self.__variables != None:
-            return self.__variables["TELEGRAM_BOT_KEY"]
-
+    #Getter dos usuarios salvos no arquivo
     def getUsersId(self):
         if self.__variables != None:
             return self.__variables["users"]
 
+    #Atualiza o campo do ultimo update_id no arquivo de variaveis
+    def updateLastUpdateId(self, update_id):
+        dict = self.readFile()                    
+        dict["last_update_id"] = update_id
+        self.writeInFile(dict)
+
+        self.loadEnviromentFile()
+
+    #Getter do ultimo update_id
+    def getLastUpdateId(self):
+        if self.__variables != None:
+            return self.__variables["last_update_id"]
+
+
+    #Getter do Token do BOT
+    def getTokenTelegramBot(self):
+        if self.__variables != None:
+            return self.__variables["TELEGRAM_BOT_KEY"]
+
+    #Funcao para saber se o chat_id ja esta cadastrado
     def idExists(self, chat_id):
         for user in self.__variables["users"]:
             if chat_id == user["chatID"]:
                 return True
         
         return False
+
+    #Funcao para leitura do arquivo de variaveis
+    def readFile(self):
+        with open(self.__file_path, "rb") as f:
+            return pickle.load(f)
+    
+    #Funcao para escrita no arquivo de variaveis
+    def writeInFile(self, data):
+        #Verifica se o arquivo existe, criando-o caso nao
+        if not exists(self.__file_path):
+            mkdir(join(getcwd(), "config"))
+            t = open(self.__file_path, "w")
+            t.close()
+        
+        with open(self.__file_path, "wb") as f:
+            pickle.dump(data, f)   
