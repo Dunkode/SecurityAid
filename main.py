@@ -21,54 +21,54 @@ while True:
 [0] Fechar aplicativo
     ''')
     
-    # try:
-    choice = int(input(">> "))
+    try:
+        choice = int(input(">> "))
 
-    match choice:
-        case 0:
-            quit()
+        match choice:
+            case 0:
+                quit()
 
-        case 1:
-            while True:
-                img = camService.takePhoto()
+            case 1:
+                while True:
+                    img = camService.takePhoto()
 
-                if isinstance(img, numpy.ndarray):
-                    camService.closeCamera()
-                    recognizedFacesServ.saveTakedPhoto(img)                        
-                    print("Nova face registrada com sucesso!")
-                    break
-        case 2:
-            #Carrega as fotos da pessoas autorizadas
-            recognizedFacesServ.loadAutorizedFaces()
-            #Carrega os nomes atrelados a essas fotos
-            recognizedFacesServ.loadNameFromFaceFiles()
+                    if isinstance(img, numpy.ndarray):
+                        camService.closeCamera()
+                        recognizedFacesServ.saveTakedPhoto(img)                        
+                        print("Nova face registrada com sucesso!")
+                        break
+            case 2:
+                #Carrega as fotos da pessoas autorizadas
+                recognizedFacesServ.loadAutorizedFaces()
+                #Carrega os nomes atrelados a essas fotos
+                recognizedFacesServ.loadNameFromFaceFiles()
 
-            #Realiza um reconhecimento do encoding de cada foto salva
-            recognizerService.recognizeRegistredFaces(recognizedFacesServ.getNamesFromFaces(), recognizedFacesServ.getAuthorizedFaces())
+                #Realiza um reconhecimento do encoding de cada foto salva
+                recognizerService.recognizeRegistredFaces(recognizedFacesServ.getNamesFromFaces(), recognizedFacesServ.getAuthorizedFaces())
 
-            while True:
-                camService.initializeCamera()
+                while True:
+                    camService.initializeCamera()
 
-                if camService.needCloseByEsc():
-                    #Fecha a camera
-                    camService.closeCamera()
-                    break
-                else:
-                    #Reconhece as faces captadas na camera
-                    recognizerService.recognizeFacesFromFrame(camService.frame_small)
+                    if camService.needCloseByEsc():
+                        #Fecha a camera
+                        camService.closeCamera()
+                        break
+                    else:
+                        #Reconhece as faces captadas na camera
+                        recognizerService.recognizeFacesFromFrame(camService.frame_small)
 
-                    #Desenha o identificador no rosto identificado
-                    camService.drawIdenficationOnFrame(recognizerService.getFaceLocations(), recognizerService.getFaceNames())
-                    
-                    #Mostra o frame desenhado
-                    camService.showFrame("Monitoring...")
+                        #Desenha o identificador no rosto identificado
+                        camService.drawIdenficationOnFrame(recognizerService.getFaceLocations(), recognizerService.getFaceNames())
+                        
+                        #Mostra o frame desenhado
+                        camService.showFrame("Monitoring...")
 
-            pass
+                pass
+            
+        sleep(3)
         
-            # while True:
-            #     if camService.startCamera():
-            #         camService.closeCamera()
-            #         break
-    sleep(3)
-    # except ValueError:
-        # print("Digite uma opção válida!")
+    except ValueError:
+        print("Digite uma opção válida!")
+
+    except Exception as erro:
+        print(erro.args)
