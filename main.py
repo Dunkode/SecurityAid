@@ -37,6 +37,7 @@ while True:
                         recognizedFacesServ.saveTakedPhoto(img)                        
                         print("Nova face registrada com sucesso!")
                         break
+                    
             case 2:
                 #Carrega as fotos da pessoas autorizadas
                 recognizedFacesServ.loadAutorizedFaces()
@@ -63,8 +64,6 @@ while True:
                         #Mostra o frame desenhado
                         camService.showFrame("Monitoring...")
 
-                pass
-            
         sleep(3)
         
     except ValueError:

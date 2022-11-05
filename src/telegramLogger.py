@@ -1,6 +1,6 @@
 from requests import request
 from enviromentVariablesService import EnviromentVariablesService
-import pickle
+from datetime import datetime
 
 envVarServ = EnviromentVariablesService()
 
@@ -12,14 +12,19 @@ class TelegramLogger():
         self.__last_update_id = envVarServ.getLastUpdateId()
         self.__users_id = self.loadUsersIDs()
 
-    #CONSULTAS NA API
-
+    #####CONSULTAS NA API#####
     #Envio da foto
     def sendPhoto(self, chat_id, file_opened):
         method = "sendPhoto"
-        params = {'chat_id': chat_id, "caption": "este é um teste"}
+        params = {'chat_id': chat_id, "caption": self.montText()}
         files = {'photo': file_opened}
-        resp = request("POST", self.__api_url + method, params, files=files)
+        resp = request("POST", self.__api_url + method, params=params, files=files)
+        return resp
+    
+    def sendGreatingsMessage(self, chat_id):
+        method = "sendMessage"
+        params = {"chat_id": chat_id, "text": "✅ Seu usuário foi registrado com sucesso!\nVocê passará a receber alertas de acesso não autorizado."}
+        resp = request("POST", self.__api_url + method, params=params)
         return resp
 
     #Consulta da última mensagem recebida pelo BOT
@@ -36,8 +41,7 @@ class TelegramLogger():
         return resp.json()
 
 
-    #CONTROLES
-
+    #####CONTROLES#####
     #Funcao para controlar o carregamento dos usuarios cadastrados
     def loadUsersIDs(self):
         if self.__bot_id != None and self.__bot_id != "":
@@ -56,6 +60,7 @@ class TelegramLogger():
 
                             new_user = {"userName": username, "chatID": chat_id}
                             
+                            self.sendGreatingsMessage(chat_id)
                             envVarServ.addNewUser(new_user)
                 
             except Exception as erro:
@@ -64,3 +69,14 @@ class TelegramLogger():
             print("ATENÇÃO!\nO bot de monitoramento não está devidamente configurado!\nRevise suas configurações.")
 
         return envVarServ.getUsersId()
+    
+    #Getter dos id's carregados
+    def getUsersId(self):
+        return self.__users_id
+
+    def montText(self):
+        now = datetime.now()
+        time = now.strftime("%d/%m/%Y %H:%M:%S")
+        str = "🛑 ATENÇÃO 🛑\nFoi detectado um acesso não autorizado."
+        str = str + f"\nData do registro: {time}"
+        str = str + f"\nCor de autenticação: 🟥 Vermelho\n\n"
