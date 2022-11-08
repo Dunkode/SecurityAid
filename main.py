@@ -7,11 +7,13 @@ from src.enviromentVariablesService import EnviromentVariablesService
 from src.recognizedFacesService import RecongnizedFacesService
 from src.recognizerService import RecognizerService
 from src.telegramLogger import TelegramLogger
+from src.telegramLogger import TelegramScheduler
 
 recognizedFacesServ = RecongnizedFacesService()
 camService = CameraManagerService()
 recognizerService = RecognizerService()
 telegramLogger = TelegramLogger()
+telegramScheduler = TelegramScheduler()
 
 while True:
     # system('cls')
@@ -69,6 +71,8 @@ while True:
                             camService.drawIdenficationOnFrame(recognizerService.getFaceLocations(), recognizerService.getFaceNames())
                             
                             camService.analiseTagColor(recognizerService.getFaceLocations())
+
+                            telegramScheduler.runScheduledTask()
 
                         #     if recognizerService.haveUnauthorizedPeoples():
                         #         telegramLogger.getNewUserId()

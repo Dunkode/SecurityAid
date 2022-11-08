@@ -1,6 +1,7 @@
 from requests import request
 from src.enviromentVariablesService import EnviromentVariablesService
 from datetime import datetime
+import schedule
 
 envVarServ = EnviromentVariablesService()
 
@@ -83,3 +84,14 @@ class TelegramLogger():
         str = "🛑 ATENÇÃO 🛑\nFoi detectado um acesso não autorizado."
         str = str + f"\nData do registro: {time}"
         str = str + f"\nCor de autenticação: 🟥 Vermelho\n\n"
+
+class TelegramScheduler():
+    def __init__(self) :
+        self.__telegramLogger = TelegramLogger()
+        schedule.every(1).minutes.do(self.readQueue)
+    
+    def readQueue(self):
+        print("pittpittini")
+
+    def runScheduledTask(self):
+        schedule.run_pending()
