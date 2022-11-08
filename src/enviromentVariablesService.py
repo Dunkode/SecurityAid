@@ -21,14 +21,15 @@ class EnviromentVariablesService():
         
         self.__variables = dict
 
-    #Adiciona um novo usuario no arquivo de variaveis
-    def addNewUser(self, new_user):
-        dict = self.readFile()            
-        
-        dict["users"].append(new_user)
-        self.writeInFile(dict)
-
+    #Salva os dados da variavel no arquivo e o carrega novamente
+    def saveDataAndLoad(self):
+        self.writeInFile(self.__variables)
         self.loadEnviromentFile()
+
+    #Adiciona um novo usuario no arquivo de variaveis
+    def addNewUser(self, new_user):      
+        self.__variables["users"].append(new_user)
+        self.saveDataAndLoad()
 
     #Getter dos usuarios salvos no arquivo
     def getUsersId(self):
@@ -37,11 +38,8 @@ class EnviromentVariablesService():
 
     #Atualiza o campo do ultimo update_id no arquivo de variaveis
     def updateLastUpdateId(self, update_id):
-        dict = self.readFile()                    
-        dict["last_update_id"] = update_id
-        self.writeInFile(dict)
-
-        self.loadEnviromentFile()
+        self.__variables["last_update_id"] = update_id
+        self.saveDataAndLoad()
 
     #Getter do ultimo update_id
     def getLastUpdateId(self):
@@ -64,16 +62,24 @@ class EnviromentVariablesService():
 
     #Funcao para leitura do arquivo de variaveis
     def readFile(self):
+        #Verifica se o arquivo existe, criando-o caso nao
+        if not exists(self.__file_path):
+            if not exists(join(getcwd(), "config")):
+                mkdir(join(getcwd(), "config"))
+
+            t = open(self.__file_path, "w")
+            t.close()
+            return dict()
+
         with open(self.__file_path, "rb") as f:
             return pickle.load(f)
     
     #Funcao para escrita no arquivo de variaveis
     def writeInFile(self, data):
-        #Verifica se o arquivo existe, criando-o caso nao
-        if not exists(self.__file_path):
-            mkdir(join(getcwd(), "config"))
-            t = open(self.__file_path, "w")
-            t.close()
-        
         with open(self.__file_path, "wb") as f:
             pickle.dump(data, f)   
+    
+    #
+    def defineTelegramBotKey(self, key):
+        self.__variables["TELEGRA_BOT_KEY"] = key
+        self.saveDataAndLoad()

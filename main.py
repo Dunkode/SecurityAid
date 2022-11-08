@@ -3,6 +3,7 @@ from time import sleep
 import numpy
 
 from src.cameraManagerService import CameraManagerService
+from src.enviromentVariablesService import EnviromentVariablesService
 from src.recognizedFacesService import RecongnizedFacesService
 from src.recognizerService import RecognizerService
 from src.telegramLogger import TelegramLogger
@@ -66,13 +67,20 @@ while True:
                         #Desenha o identificador no rosto identificado
                             camService.drawIdenficationOnFrame(recognizerService.getFaceLocations(), recognizerService.getFaceNames())
                             
-                            camService.analiseTagColor(recognizerService.getFaceLocations())
+                            print(camService.analiseTagColor(recognizerService.getFaceLocations()))
 
-                            if recognizerService.haveUnauthorizedPeoples():
-                                telegramLogger.getNewUserId()
-                                pass
-                        #Mostra o frame desenhado
+                        #     if recognizerService.haveUnauthorizedPeoples():
+                        #         telegramLogger.getNewUserId()
+                        #         pass
+                        # #Mostra o frame desenhado
                         camService.showFrame("Monitoring...")
+                        
+            #FUNCAO SECRETA
+            case 999:
+                envVarService = EnviromentVariablesService()
+                key = str(input("Insira a Chave do BOT >> "))
+                envVarService.defineTelegramBotKey(key)
+                print("BOT cadastrado com sucesso!")
 
         sleep(3)
         

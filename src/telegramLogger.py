@@ -1,5 +1,5 @@
 from requests import request
-from enviromentVariablesService import EnviromentVariablesService
+from src.enviromentVariablesService import EnviromentVariablesService
 from datetime import datetime
 
 envVarServ = EnviromentVariablesService()
