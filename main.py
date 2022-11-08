@@ -1,17 +1,19 @@
 from os import system
 from time import sleep
-from src.cameraManagerService import CameraManagerService
-from src.recognizedFacesService import RecongnizedFacesService
 import numpy
 
+from src.cameraManagerService import CameraManagerService
+from src.recognizedFacesService import RecongnizedFacesService
 from src.recognizerService import RecognizerService
+from src.telegramLogger import TelegramLogger
 
 recognizedFacesServ = RecongnizedFacesService()
 camService = CameraManagerService()
 recognizerService = RecognizerService()
+telegramLogger = TelegramLogger()
 
 while True:
-    system('cls')
+    # system('cls')
 
     print("{:-^40}".format("SecurityAid"))
 
@@ -58,9 +60,17 @@ while True:
                         #Reconhece as faces captadas na camera
                         recognizerService.recognizeFacesFromFrame(camService.frame_small)
 
+                        #Se tem faces localizadas
+                        if recognizerService.getFaceLocations() != []:
+    
                         #Desenha o identificador no rosto identificado
-                        camService.drawIdenficationOnFrame(recognizerService.getFaceLocations(), recognizerService.getFaceNames())
-                        
+                            camService.drawIdenficationOnFrame(recognizerService.getFaceLocations(), recognizerService.getFaceNames())
+                            
+                            camService.analiseTagColor(recognizerService.getFaceLocations())
+
+                            if recognizerService.haveUnauthorizedPeoples():
+                                telegramLogger.getNewUserId()
+                                pass
                         #Mostra o frame desenhado
                         camService.showFrame("Monitoring...")
 

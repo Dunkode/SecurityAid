@@ -4,6 +4,9 @@ from datetime import datetime
 
 envVarServ = EnviromentVariablesService()
 
+#Classe responsavel por fazer o envio de mensagens de alerta
+#de pessoas nao autorizadas, assim como o cadastro de novas
+#pessoas que devem receber esses alertas
 class TelegramLogger():
 
     def __init__(self):

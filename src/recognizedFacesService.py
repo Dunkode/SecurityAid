@@ -1,9 +1,11 @@
-from os import path, getcwd, mkdir
+from os import getcwd, mkdir
 from os.path import join, exists
 from glob import glob
 from cv2 import imwrite
 EXTENSION_FILES = ["png", "jpeg", "jpg"]
 
+#Classe responsavel por carregar no sistema as fotos
+#e nomes das pessoas autorizadas
 class RecongnizedFacesService():
 
     def __init__(self):
@@ -29,7 +31,7 @@ class RecongnizedFacesService():
         for file in self.__list_of_files:
             name = ""
             for ext in EXTENSION_FILES:
-                name = file.replace(self.registred_faces_dir, "").replace(f".{ext}", "")
+                name = file.replace(self.registred_faces_dir, "").replace(f".{ext}", "").replace("\\", "")
             
             self.__list_of_names.append(name)
 
