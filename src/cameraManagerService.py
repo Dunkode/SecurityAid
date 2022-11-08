@@ -9,12 +9,12 @@ from src.rangeColorsConst import RangeColorsConst
 class CameraManagerService():
 
     def __init__(self):
-        self.frame, self.frame_small = []
+        self.frame, self.frame_small = [], []
         self.__connectCamera = True
         self.__COLOR_RECOGNIZED = (0,255,0)
         self.__COLOR_UNRECOGNIZED = (0,0,255)
         self.__font = cv.FONT_HERSHEY_DUPLEX
-        self.__altura, self.__largura = 0
+        self.__altura, self.__largura = 0, 0
 
     def initializeCamera(self):
         if self.__connectCamera:

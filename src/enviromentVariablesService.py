@@ -81,5 +81,5 @@ class EnviromentVariablesService():
     
     #
     def defineTelegramBotKey(self, key):
-        self.__variables["TELEGRA_BOT_KEY"] = key
+        self.__variables["TELEGRAM_BOT_KEY"] = key
         self.saveDataAndLoad()

@@ -21,6 +21,7 @@ while True:
     print('''
 [1] Cadastrar rosto
 [2] Iniciar monitoramento
+[3] Configurar monitoramento
 [0] Fechar aplicativo
     ''')
     
@@ -67,14 +68,21 @@ while True:
                         #Desenha o identificador no rosto identificado
                             camService.drawIdenficationOnFrame(recognizerService.getFaceLocations(), recognizerService.getFaceNames())
                             
-                            print(camService.analiseTagColor(recognizerService.getFaceLocations()))
+                            camService.analiseTagColor(recognizerService.getFaceLocations())
 
                         #     if recognizerService.haveUnauthorizedPeoples():
                         #         telegramLogger.getNewUserId()
                         #         pass
                         # #Mostra o frame desenhado
                         camService.showFrame("Monitoring...")
-                        
+
+            case 3:
+                inputStr = str(input("Escreva, por extenso, as cores que serão autorizadas neste ponto\nseparando-as por virgula." + 
+                                    "\nCores disponíveis: \n\t→ AZUL\n\t→ VERMELHO\n\t→ VERDE\n\t→ AMARELO" + 
+                                    "\n>> "))
+                separetedColors = inputStr.lower().strip(" ").split(",")
+                print(separetedColors)
+            
             #FUNCAO SECRETA
             case 999:
                 envVarService = EnviromentVariablesService()
