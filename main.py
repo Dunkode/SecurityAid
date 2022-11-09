@@ -64,20 +64,21 @@ while True:
                         #Reconhece as faces captadas na camera
                         recognizerService.recognizeFacesFromFrame(camService.frame_small)
 
+                        telegramScheduler.runScheduledTask()
+                        
                         #Se tem faces localizadas
                         if recognizerService.getFaceLocations() != []:
     
-                        #Desenha o identificador no rosto identificado
+                            #Desenha o identificador no rosto identificado
                             camService.drawIdenficationOnFrame(recognizerService.getFaceLocations(), recognizerService.getFaceNames())
                             
+                            #Analisa a cor do crachá que a pessoa esta usando
                             camService.analiseTagColor(recognizerService.getFaceLocations())
 
-                            telegramScheduler.runScheduledTask()
-
-                        #     if recognizerService.haveUnauthorizedPeoples():
-                        #         telegramLogger.getNewUserId()
-                        #         pass
-                        # #Mostra o frame desenhado
+                            if recognizerService.haveUnauthorizedPeoples():
+                                telegramScheduler.createAlertUnauthorizedFile(camService.frame)
+                            
+                            
                         camService.showFrame("Monitoring...")
 
             case 3:

@@ -2,6 +2,7 @@ from os import getcwd, mkdir
 from os.path import join, exists
 from glob import glob
 from cv2 import imwrite
+
 EXTENSION_FILES = ["png", "jpeg", "jpg"]
 
 #Classe responsavel por carregar no sistema as fotos
