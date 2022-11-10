@@ -1,11 +1,11 @@
-from requests import request
-from datetime import datetime
-from os.path import join, exists
 from os import getcwd, mkdir, remove
+from os.path import join, exists
+from datetime import datetime
+from requests import request
 from cv2 import imencode
+from glob import glob
 import schedule
 import pickle
-from glob import glob
 import io
 
 
@@ -24,9 +24,10 @@ class TelegramLogger():
         self.__last_update_id = envVarServ.getLastUpdateId()
         self.__users_id = self.loadUsersIDs()
 
-    #####CONSULTAS NA API#####
-    #Envio da foto
-    def sendPhoto(self, user, data):
+    #####API#####
+    
+    #Envio do alerta de pessoa nao autorizada
+    def sendUnauthorizedAlertPhoto(self, user, data):
         #Escrita da imagem em buffer de memoria
         #para conseguir enviar ela pela API
         _, buffer = imencode(".jpg", data["img"])
@@ -39,6 +40,22 @@ class TelegramLogger():
         ioBuffer.close()
         return resp
     
+    #Envio do alerta de pessoa usando uma cor nao autorizada
+    #naquele setor
+    def sendUnauthorizedColorAlertPhoto(self, user, data):
+        #Escrita da imagem em buffer de memoria
+        #para conseguir enviar ela pela API
+        _, buffer = imencode(".jpg", data["img"])
+        ioBuffer = io.BytesIO(buffer)
+
+        method = "sendPhoto"
+        params = {'chat_id': user["chatID"], "caption": self.montAlertUnauthorizedColorMessage(data)}
+        files = {'photo': ioBuffer}
+        resp = request("POST", self.__api_url + method, params=params, files=files)
+        ioBuffer.close()
+        return resp
+    
+    #Envio de mensagem para confirmacao de cadastro na API
     def sendGreatingsMessage(self, chat_id):
         method = "sendMessage"
         params = {"chat_id": chat_id, "text": "✅ Seu usuário foi registrado com sucesso!\nVocê passará a receber alertas de acesso não autorizado."}
@@ -96,14 +113,27 @@ class TelegramLogger():
         str = "🛑 ATENÇÃO 🛑\nFoi detectado um acesso não autorizado."
         str = str + f"\nData do registro: {time}"
         return str
-    # def montText(self):
-    #     str = "🛑 ATENÇÃO 🛑\nFoi detectado um acesso não autorizado."
-    #     str = str + f"\nData do registro: {time}"
-    #     str = str + f"\nCor de autenticação: 🟥 Vermelho\n\n"
+    
+    def montAlertUnauthorizedColorMessage(self, data):
+        str = "🛑 ATENÇÃO 🛑\nO usuário {} foi identificado em uma área não permitida.".format(data["name"])
+        str = str + "\nData do registro: {}".format(data["date"])
+        str = str + "\nCor do crachá: {}".format(self.selectColorMessage(data["color"]))
+        return str
 
+    def selectColorMessage(self, color):
+        match color:
+            case "AZUL":
+                return "🟦 Azul"
+            case "VERMELHO":
+                return "🟥 Vermelho"
+            case "VERDE":
+                return "🟩 Verde"
+            case "AMARELO":
+                return "🟨 Amarelo"
+    
 class TelegramScheduler():
     def __init__(self) :
-        self.__path = join(getcwd() + "\\data\\send_files_queue")
+        self.__path = join(getcwd(), join("data", "send_files_queue"))
         
         if not exists(self.__path):
             self.createQueuePath()
@@ -113,8 +143,8 @@ class TelegramScheduler():
         schedule.every(1).minutes.do(self.__telegramLogger.loadUsersIDs)
     
     def createQueuePath(self):
-        if not exists(join(getcwd() + "\\data")):
-            mkdir(join(getcwd() + "\\data"))
+        if not exists(join(getcwd(), "data")):
+            mkdir(join(getcwd(), "data"))
         
         mkdir(self.__path)
 
@@ -122,15 +152,20 @@ class TelegramScheduler():
         filesNames = self.loadFileNamesInQueue()
 
         for fileName in filesNames:
-            if "unauthorized" in fileName:
-                dict = {}
+            dict = {}
                 
-                with open(fileName, "rb") as f:
-                    dict = pickle.load(f)
+            with open(fileName, "rb") as f:
+                dict = pickle.load(f)
+
+            for id in self.__telegramLogger.getUsersId():
                 
-                for id in self.__telegramLogger.getUsersId():
-                    self.__telegramLogger.sendPhoto(id, dict)
-                    remove(fileName)
+                if "unauthorized_alert" in fileName:                
+                    self.__telegramLogger.sendUnauthorizedAlertPhoto(id, dict)
+                
+                elif "unauthorized_color_alert" in fileName:
+                    self.__telegramLogger.sendUnauthorizedColorAlertPhoto(id, dict)
+                
+            remove(fileName)
 
 
     def runScheduledTask(self):
@@ -145,4 +180,17 @@ class TelegramScheduler():
         timestr = now.strftime("%d%m%Y%H%M")
         
         with open(join(self.__path, f"unauthorized_alert_{timestr}.dat"), "wb") as f:
+             pickle.dump(dict, f)
+             
+    def createAlertUnauthorizedColorFile(self, img, name, color):
+        now = datetime.now()
+        dict = {
+            "date" : now.strftime("%d/%m/%Y %H:%M:%S"), 
+            "img" : img, 
+            "name" : name, 
+            "color" : color
+        }
+        timestr = now.strftime("%d%m%Y%H%M")
+        
+        with open(join(self.__path, f"unauthorized_color_alert_{timestr}.dat"), "wb") as f:
              pickle.dump(dict, f)

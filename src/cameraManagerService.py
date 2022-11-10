@@ -1,5 +1,5 @@
-import cv2 as cv
 import numpy as np
+import cv2 as cv
 
 from src.rangeColorsConst import RangeColorsConst
 
@@ -45,6 +45,8 @@ class CameraManagerService():
         self.__connectCamera = True
 
     def drawIdenficationOnFrame(self, captured_face_locations, captured_face_name):
+        #O loop e feito na funcao para que todos os rostos sejam
+        #identificados no mesmo frame
         for (top, right, bottom, left), name in zip(captured_face_locations, captured_face_name):
             isAuthorized = name != "UNAUTHORIZED"
             
@@ -72,21 +74,23 @@ class CameraManagerService():
                         self.__font, 
                         0.5, 
                         (255, 255, 255), 
-                        1)
+                        2)
             
                
-    def analiseTagColor(self, captured_face_locations):
+    def analiseTagColor(self, captured_face_location):
+        (top, right, bottom, left) = captured_face_location
         rangeColor = RangeColorsConst()
-        for (top, right, bottom, left) in captured_face_locations:
-            percentColors = []
+        
+        percentColors = []
 
-            top = (int(top * 4) + 200) if (int(top * 4) + 200) < self.__altura else self.__altura 
-            right = int(right * 4)
-            bottom = (int(bottom * 4) + 200) if (int(bottom * 4) + 200) < self.__altura else self.__altura
-            left = int(left * 4)
+        top = (int(top * 4) + 200) if (int(top * 4) + 200) < self.__altura else self.__altura 
+        right = int(right * 4)
+        bottom = (int(bottom * 4) + 200) if (int(bottom * 4) + 200) < self.__altura else self.__altura
+        left = int(left * 4)
 
-            roi = self.frame[top : bottom , left : right]
+        roi = self.frame[top : bottom , left : right]       
 
+        if roi.size > 0:
             contorsBlue   = self.findContorsWithRangeColor(roi, rangeColor.LOWER_BLUE, rangeColor.UPPER_BLUE)
             contorsRed    = self.findContorsWithRangeColor(roi, rangeColor.LOWER_RED, rangeColor.UPPER_RED)
             contorsGreen  = self.findContorsWithRangeColor(roi, rangeColor.LOWER_GREEN, rangeColor.UPPER_GREEN)
@@ -109,7 +113,9 @@ class CameraManagerService():
                     case 3:
                         return "AMARELO"
 
-            return "SEM COR DE IDENTIFICAÇÃO"
+            return None
+        else:
+            return None
 
             # Input text label with a name below the face
             # cv.rectangle(self.frame, 

@@ -16,7 +16,7 @@ class EnviromentVariablesService():
         dict = self.readFile()
 
         if dict == {}:
-            dict = {"TELEGRAM_BOT_KEY" : "", "users" : [], "last_update_id" : ""}
+            dict = {"TELEGRAM_BOT_KEY" : "", "users" : [], "last_update_id" : "", "authorized_colors": []}
             self.writeInFile(dict)
         
         self.__variables = dict
@@ -25,32 +25,6 @@ class EnviromentVariablesService():
     def saveDataAndLoad(self):
         self.writeInFile(self.__variables)
         self.loadEnviromentFile()
-
-    #Adiciona um novo usuario no arquivo de variaveis
-    def addNewUser(self, new_user):      
-        self.__variables["users"].append(new_user)
-        self.saveDataAndLoad()
-
-    #Getter dos usuarios salvos no arquivo
-    def getUsersId(self):
-        if self.__variables != None:
-            return self.__variables["users"]
-
-    #Atualiza o campo do ultimo update_id no arquivo de variaveis
-    def updateLastUpdateId(self, update_id):
-        self.__variables["last_update_id"] = update_id
-        self.saveDataAndLoad()
-
-    #Getter do ultimo update_id
-    def getLastUpdateId(self):
-        if self.__variables != None:
-            return self.__variables["last_update_id"]
-
-
-    #Getter do Token do BOT
-    def getTokenTelegramBot(self):
-        if self.__variables != None:
-            return self.__variables["TELEGRAM_BOT_KEY"]
 
     #Funcao para saber se o chat_id ja esta cadastrado
     def idExists(self, chat_id):
@@ -79,7 +53,44 @@ class EnviromentVariablesService():
         with open(self.__file_path, "wb") as f:
             pickle.dump(data, f)   
     
-    #
+
+
+    #Adiciona um novo usuario no arquivo de variaveis
+    def addNewUser(self, new_user):      
+        self.__variables["users"].append(new_user)
+        self.saveDataAndLoad()
+
+    #Getter dos usuarios salvos no arquivo
+    def getUsersId(self):
+        if self.__variables != None:
+            return self.__variables["users"]
+
+    #Atualiza o campo do ultimo update_id no arquivo de variaveis
+    def updateLastUpdateId(self, update_id):
+        self.__variables["last_update_id"] = update_id
+        self.saveDataAndLoad()
+
+    #Getter do ultimo update_id
+    def getLastUpdateId(self):
+        if self.__variables != None:
+            return self.__variables["last_update_id"]
+
+    #Getter do Token do BOT
+    def getTokenTelegramBot(self):
+        if self.__variables != None:
+            return self.__variables["TELEGRAM_BOT_KEY"]
+
+    #Salvar o Token do BOT
     def defineTelegramBotKey(self, key):
         self.__variables["TELEGRAM_BOT_KEY"] = key
         self.saveDataAndLoad()
+
+    #Salvar as cores
+    def saveAuthorizedColors(self, colors):
+        self.__variables["authorized_colors"] = colors
+        self.saveDataAndLoad()
+    
+    #Getter das cores autorizadas no setor
+    def getAuthorizedColors(self):
+        if self.__variables != None:
+            return self.__variables["authorized_colors"]

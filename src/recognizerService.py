@@ -27,6 +27,7 @@ class RecognizerService():
             self.__registred_faces_names.append(names[i])
     
     def recognizeFacesFromFrame(self, frame_small):
+        self.__captured_faces_names.clear()
         self.__captured_face_locations = face_recognition.face_locations(frame_small)
         self.__captured_face_encondings = face_recognition.face_encodings(frame_small, self.__captured_face_locations)
 
@@ -39,11 +40,15 @@ class RecognizerService():
             
             if matches[best_match_index]:
                 name = self.__registred_faces_names[best_match_index]
-            
+        
             self.__captured_faces_names.append(name)
 
     def haveUnauthorizedPeoples(self):
         for name in self.__captured_faces_names:
-            return name != "UNAUTHORIZED"
+            if name == "UNAUTHORIZED":
+                return True
         
         return False
+
+    def getNameByFaceLocation(self, location):
+        return self.__captured_faces_names[self.__captured_face_locations.index(location)]
