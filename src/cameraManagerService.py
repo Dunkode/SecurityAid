@@ -78,17 +78,22 @@ class CameraManagerService():
             
                
     def analiseTagColor(self, captured_face_location):
+        PERCENT = 30
         (top, right, bottom, left) = captured_face_location
         rangeColor = RangeColorsConst()
         
         percentColors = []
 
-        top = (int(top * 4) + 200) if (int(top * 4) + 200) < self.__altura else self.__altura 
+        adjustedTop = int(bottom * 4)
+        top = adjustedTop + ((adjustedTop * PERCENT)//100) if adjustedTop + ((adjustedTop* PERCENT)//100) < self.__altura else self.__altura 
+        
         right = int(right * 4)
-        bottom = (int(bottom * 4) + 200) if (int(bottom * 4) + 200) < self.__altura else self.__altura
+        
+        bottom = adjustedTop + int(bottom * 4)
+
         left = int(left * 4)
 
-        roi = self.frame[top : bottom , left : right]       
+        roi = self.frame[top : bottom , left : right]   
 
         if roi.size > 0:
             contorsBlue   = self.findContorsWithRangeColor(roi, rangeColor.LOWER_BLUE, rangeColor.UPPER_BLUE)
@@ -101,6 +106,18 @@ class CameraManagerService():
             percentColors.append(self.calculatePercentageOfColor(roi, rangeColor.LOWER_GREEN, rangeColor.UPPER_GREEN, contorsGreen))
             percentColors.append(self.calculatePercentageOfColor(roi, rangeColor.UPPER_YELLOW, rangeColor.UPPER_YELLOW, contorsYellow))
 
+            # maskBlue = self.calculatePercentageOfColor(roi, rangeColor.LOWER_BLUE, rangeColor.UPPER_BLUE, contorsBlue)
+            # maskRed = self.calculatePercentageOfColor(roi, rangeColor.LOWER_RED, rangeColor.UPPER_RED, contorsRed)
+            # maskGreen = self.calculatePercentageOfColor(roi, rangeColor.LOWER_GREEN, rangeColor.UPPER_GREEN, contorsGreen)
+            # maskYellow = self.calculatePercentageOfColor(roi, rangeColor.UPPER_YELLOW, rangeColor.UPPER_YELLOW, contorsYellow)
+
+            
+            # cv.imshow('maskBlue', maskBlue[1])
+            # cv.imshow('maskRed', maskRed[1])
+            # cv.imshow('maskGreen', maskGreen[1])
+            # cv.imshow('maskYellow', maskYellow[1])
+
+            percentColors.append(0)
             predominantColor = max(percentColors)
             if predominantColor != 0:
                 match percentColors.index(predominantColor):
@@ -116,17 +133,6 @@ class CameraManagerService():
             return None
         else:
             return None
-
-            # Input text label with a name below the face
-            # cv.rectangle(self.frame, 
-            #                 (left, top), 
-            #                 (right, bottom), 
-            #                 self.__COLOR_RECOGNIZED,
-            #                 2)
-
-            # cv.imshow("roi", roi)
-            # cv.imwrite("coisa.png", self.frame)
-            # quit()
 
     def findContorsWithRangeColor(self, frame, lower, upper):
         hsv    =  cv.cvtColor(frame, cv.COLOR_BGR2HSV)
@@ -145,6 +151,6 @@ class CameraManagerService():
 
             if area > 800:
                 ratio = cv.countNonZero(mask) / (frame.size)
-                return np.round(( ratio * 100 ), 2)     
+                return np.round(( ratio * 100 ), 2)    
         
         return 0.0

@@ -1,15 +1,16 @@
-from os import getcwd, mkdir, remove
-from os.path import join, exists
-from datetime import datetime
-from requests import request
-from cv2 import imencode
-from glob import glob
-import schedule
-import pickle
 import io
+import pickle
+from glob import glob
+from datetime import datetime
+from os.path import exists, join
+from os import getcwd, mkdir, remove
 
+import schedule
+from cv2 import imencode
+from requests import request
 
 from src.enviromentVariablesService import EnviromentVariablesService
+from src.consoleLoggerUtil import ConsoleLoggerUtil
 
 envVarServ = EnviromentVariablesService()
 
@@ -23,6 +24,8 @@ class TelegramLogger():
         self.__api_url = f"https://api.telegram.org/bot{self.__bot_id}/"
         self.__last_update_id = envVarServ.getLastUpdateId()
         self.__users_id = self.loadUsersIDs()
+        self.log = ConsoleLoggerUtil()
+
 
     #####API#####
     
@@ -99,9 +102,11 @@ class TelegramLogger():
                             envVarServ.addNewUser(new_user)
                 
             except Exception as erro:
-                print(f"Erro ao buscar novos usuários:{erro.args}")
+                self.log.error(f"Erro ao buscar novos usuários: {erro.args}")
         else:
-            print("ATENÇÃO!\nO bot de monitoramento não está devidamente configurado!\nRevise suas configurações.")
+            self.log.warning("ATENÇÃO!")
+            self.log.warning("O bot de monitoramento não está devidamente configurado!")
+            self.log.waning("Revise suas configurações.")
 
         return envVarServ.getUsersId()
     
@@ -180,7 +185,7 @@ class TelegramScheduler():
         timestr = now.strftime("%d%m%Y%H%M")
         
         with open(join(self.__path, f"unauthorized_alert_{timestr}.dat"), "wb") as f:
-             pickle.dump(dict, f)
+            pickle.dump(dict, f)
              
     def createAlertUnauthorizedColorFile(self, img, name, color):
         now = datetime.now()
@@ -193,4 +198,4 @@ class TelegramScheduler():
         timestr = now.strftime("%d%m%Y%H%M")
         
         with open(join(self.__path, f"unauthorized_color_alert_{timestr}.dat"), "wb") as f:
-             pickle.dump(dict, f)
+            pickle.dump(dict, f)

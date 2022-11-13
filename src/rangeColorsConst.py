@@ -11,5 +11,5 @@ class RangeColorsConst():
         self.LOWER_GREEN = np.array([40,101,23])
         self.UPPER_GREEN = np.array([59,250,158])
         
-        self.LOWER_YELLOW = np.array([16,106,114])
+        self.LOWER_YELLOW = np.array([16,106,155])
         self.UPPER_YELLOW = np.array([35,255,255])

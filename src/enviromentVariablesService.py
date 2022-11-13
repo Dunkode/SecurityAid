@@ -2,6 +2,13 @@ from os.path import join, exists
 from os import getcwd, mkdir
 import pickle
 
+EMPTY_DATA = {
+                "TELEGRAM_BOT_KEY" : "", 
+                "users" : [], 
+                "last_update_id" : "", 
+                "authorized_colors": []
+             }
+
 #Classe responsavel por gerenciar o arquivo de variaveis do ambiente
 #como o Token para o BOT do Telegram e os usuarios que podem
 #receber os alertas
@@ -16,7 +23,7 @@ class EnviromentVariablesService():
         dict = self.readFile()
 
         if dict == {}:
-            dict = {"TELEGRAM_BOT_KEY" : "", "users" : [], "last_update_id" : "", "authorized_colors": []}
+            dict = EMPTY_DATA
             self.writeInFile(dict)
         
         self.__variables = dict

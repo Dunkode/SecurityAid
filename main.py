@@ -2,22 +2,36 @@ from time import sleep
 from os import system
 import numpy
 
+
 from src.enviromentVariablesService import EnviromentVariablesService
-from src.recognizedFacesService import RecongnizedFacesService
-from src.cameraManagerService import CameraManagerService
-from src.recognizerService import RecognizerService
 from src.telegramService import TelegramScheduler
 from src.telegramService import TelegramLogger
+from src.recognizedFacesService import RecongnizedFacesService
+from src.cameraManagerService import CameraManagerService
+from src.consoleLoggerUtil import ConsoleLoggerUtil as log
+from src.recognizerService import RecognizerService
+
+envVarService = EnviromentVariablesService()
+log.info("Inicializando serviço de controle de variáveis de ambiente.")
+
+telegramScheduler = TelegramScheduler()
+log.info("Inicializando agendador de envio de mensagens.")
+
+telegramLogger = TelegramLogger()
+log.info("Inicializando logger do Telegram.")
 
 recognizedFacesServ = RecongnizedFacesService()
-envVarService = EnviromentVariablesService()
-recognizerService = RecognizerService()
-telegramScheduler = TelegramScheduler()
+log.info("Inicializando serviço de reconhecimento de faces cadastradas.")
+
 camService = CameraManagerService()
-telegramLogger = TelegramLogger()
+log.info("Inicializando serviço de gerenciamento de camera.")
+
+recognizerService = RecognizerService()
+log.info("Inicializando serviço de reconhecimento de faces.")
 
 while True:
-    system('cls')
+    sleep(2)
+    system("cls")
 
     print("{:-^40}".format("SecurityAid"))
 
@@ -29,10 +43,12 @@ while True:
     ''')
     
     try:
+
         choice = int(input(">> "))
 
         match choice:
             case 0:
+                log.info("Encerrando o sistema.")
                 quit()
 
             case 1:
@@ -59,6 +75,8 @@ while True:
                     colorsAuthorized = envVarService.getAuthorizedColors()
                     colorIdentified = None
 
+                    log.info("Iniciando monitoramento...")
+                    
                     while True:
                         #Inicializa a camera
                         camService.initializeCamera()
@@ -98,30 +116,36 @@ while True:
                                 if recognizerService.haveUnauthorizedPeoples():
                                     telegramScheduler.createAlertUnauthorizedFile(camService.frame)
                                 
-                        camService.showFrame("Monitoring...")
+                        camService.showFrame("Tela de monitoramento")
                 else:
-                    print("Cadastre rostos para poder realizar o monitoramento!")
-
+                    log.warning("Cadastre faces para iniciar o monitoramento!")
             case 3:
+                #Lista com as cores que estao mapeadas no projeto
+                possibleColors = ["AZUL", "VERMELHO", "VERDE", "AMARELO"]
+
                 inputStr = str(input("Escreva, por extenso, as cores que serão autorizadas neste ponto\nseparando-as por virgula." + 
                                     "\nCores disponíveis: \n\t→ AZUL\n\t→ VERMELHO\n\t→ VERDE\n\t→ AMARELO" + 
                                     "\n>> "))
                 
-                separetedColors = inputStr.upper().strip(" ").split(",")
+                separetedColors = inputStr.upper().replace(" ", "").split(",")
 
-                envVarService.saveAuthorizedColors(separetedColors)            
-            
+                salvar = True
+                for color in separetedColors:
+                    if color not in possibleColors:
+                        log.warning(f"Foi inserida uma cor inválida:\'{color}\'\nInsira as cores novamente!")
+                        salvar = False
+                
+                if salvar:
+                    envVarService.saveAuthorizedColors(separetedColors)            
+                    log.info("Cores cadastradas com sucesso!")            
             #FUNCAO SECRETA
             #Cadastro do Token do BOT
             case 999:
                 key = str(input("Insira a Chave do BOT >> "))
                 envVarService.defineTelegramBotKey(key)
                 print("BOT cadastrado com sucesso!")
-
-        sleep(3)
         
-    except ValueError:
-        print("Digite uma opção válida!")
-
+    except ValueError as ve:
+        log.error("Digite uma opção válida!")
     except Exception as erro:
-        print(erro.args)
+        log.error(f"Ocorreu um erro: {erro.args}")
