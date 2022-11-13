@@ -1,6 +1,7 @@
 # SecurityAid
 
-## Informações:
+**Informações:**  
+
 **Repositório criado para a Atividade Avaliativa - Projeto Computer Vision Full.**  
 **Universidade:** Atitus Educação – Passo Fundo/RS  
 **Disciplina:** Computação Gráfica  
