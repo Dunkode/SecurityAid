@@ -1,5 +1,5 @@
 from os.path import join, exists
-from os import getcwd, mkdir
+from os import getcwd, mkdir, remove
 from cv2 import imwrite
 from glob import glob
 
@@ -40,6 +40,14 @@ class RecongnizedFacesService():
     def saveTakedPhoto(self, frame):
         name = input("Insira o nome de registro: ")
         imwrite(join(self.registred_faces_dir, name + ".jpg"), frame)
+    
+    def removeRegistredFace(self, name):
+        index = self.__list_of_names.index(name)
+        fileToRemove = self.__list_of_files[index]
+        remove(fileToRemove)
+        self.__list_of_names.pop(index)
+        self.__list_of_files.pop(index)
+
 
     def createRecognizedFacesDir(self):
         if not exists(self.registred_faces_dir):

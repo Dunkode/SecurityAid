@@ -65,6 +65,12 @@ class TelegramLogger():
         resp = request("POST", self.__api_url + method, params=params)
         return resp
 
+    def sendStopMessage(self, chat_id):
+        method = "sendMessage"
+        params = {"chat_id": chat_id, "text": "❎ Seu usuário foi desregistrado do sistema de monitoramento."}
+        resp = request("POST", self.__api_url + method, params=params)
+        return resp
+
     #Consulta da última mensagem recebida pelo BOT
     def getNewUserId(self):
         method = "getUpdates"
@@ -92,14 +98,21 @@ class TelegramLogger():
                         update_id = result["update_id"]
                         envVarServ.updateLastUpdateId(update_id)
 
-                        if not envVarServ.idExists(message["chat"]["id"]) and message["text"] == "/start":
-                            chat_id = message["chat"]["id"]
-                            username = message["from"]["username"]
+                        chat_id = message["chat"]["id"]
+                        username = message["from"]["username"]
 
-                            new_user = {"userName": username, "chatID": chat_id}
-                            
+                        user = {"userName": username, "chatID": chat_id}
+
+                        #Registra o usuário novo se ele não existir
+                        if not envVarServ.idExists(chat_id) and message["text"] == "/start":
                             self.sendGreatingsMessage(chat_id)
-                            envVarServ.addNewUser(new_user)
+                            envVarServ.addNewUser(user)
+
+                        #Desregistra o usuário se ele já existir
+                        elif envVarServ.idExists(chat_id) and message["text"] == "/stop":
+                            self.sendStopMessage(chat_id)
+                            envVarServ.removeUser(user)
+                            
                 
             except Exception as erro:
                 self.log.error(f"Erro ao buscar novos usuários: {erro.args}")

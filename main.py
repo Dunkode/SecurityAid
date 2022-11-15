@@ -37,8 +37,9 @@ while True:
 
     print('''
 [1] Cadastrar rosto
-[2] Iniciar monitoramento
-[3] Configurar cores do monitoramento
+[2] Descadastrar rosto
+[3] Iniciar monitoramento
+[4] Configurar cores do monitoramento
 [0] Fechar aplicativo
     ''')
     
@@ -58,10 +59,26 @@ while True:
                     if isinstance(img, numpy.ndarray):
                         camService.closeCamera()
                         recognizedFacesServ.saveTakedPhoto(img)                        
-                        print("Nova face registrada com sucesso!")
+                        log.info("Nova face registrada com sucesso!")
                         break
-                    
+
             case 2:
+                recognizedFacesServ.loadAutorizedFaces()
+                names = recognizedFacesServ.getNamesFromFaces()
+                print("Digite o número da face a ser excluida:\n")
+
+                for i in range(0, len(names)):
+                    print(f"\t[{i}] {names[i]}")
+
+                imgIndex = int(input("\n>> "))
+
+                if imgIndex > len(names):
+                    raise ValueError()
+                
+                recognizedFacesServ.removeRegistredFace(names[imgIndex])
+                log.info("Face desregistrada com sucesso!")
+
+            case 3:
                 #Carrega as fotos da pessoas autorizadas
                 recognizedFacesServ.loadAutorizedFaces()
                 
@@ -119,7 +136,8 @@ while True:
                         camService.showFrame("Tela de monitoramento")
                 else:
                     log.warning("Cadastre faces para iniciar o monitoramento!")
-            case 3:
+            
+            case 4:
                 #Lista com as cores que estao mapeadas no projeto
                 possibleColors = ["AZUL", "VERMELHO", "VERDE", "AMARELO"]
 
@@ -138,6 +156,7 @@ while True:
                 if salvar:
                     envVarService.saveAuthorizedColors(separetedColors)            
                     log.info("Cores cadastradas com sucesso!")            
+            
             #FUNCAO SECRETA
             #Cadastro do Token do BOT
             case 999:

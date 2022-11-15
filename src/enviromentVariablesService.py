@@ -66,6 +66,11 @@ class EnviromentVariablesService():
     def addNewUser(self, new_user):      
         self.__variables["users"].append(new_user)
         self.saveDataAndLoad()
+    
+    def removeUser(self, remove_user):
+        index = self.__variables["users"].index(remove_user)
+        self.__variables["users"].pop(index)
+        self.saveDataAndLoad()
 
     #Getter dos usuarios salvos no arquivo
     def getUsersId(self):
