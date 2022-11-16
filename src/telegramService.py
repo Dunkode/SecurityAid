@@ -23,9 +23,10 @@ class TelegramLogger():
         self.__bot_id = envVarServ.getTokenTelegramBot()
         self.__api_url = f"https://api.telegram.org/bot{self.__bot_id}/"
         self.__last_update_id = envVarServ.getLastUpdateId()
-        self.__users_id = self.loadUsersIDs()
+        self.__users = []
         self.log = ConsoleLoggerUtil()
-
+        
+        self.loadUsers()
 
     #####API#####
     
@@ -87,8 +88,9 @@ class TelegramLogger():
 
     #####CONTROLES#####
     #Funcao para controlar o carregamento dos usuarios cadastrados
-    def loadUsersIDs(self):
+    def loadUsers(self):
         if self.__bot_id != None and self.__bot_id != "":
+            self.__last_update_id = envVarServ.getLastUpdateId()
             resp = self.getNewUserId()
             try:
                 if resp["ok"] and resp["result"] != []:
@@ -112,7 +114,8 @@ class TelegramLogger():
                         elif envVarServ.idExists(chat_id) and message["text"] == "/stop":
                             self.sendStopMessage(chat_id)
                             envVarServ.removeUser(user)
-                            
+
+                        self.__users = envVarServ.getUsersId()           
                 
             except Exception as erro:
                 self.log.error(f"Erro ao buscar novos usuários: {erro.args}")
@@ -120,12 +123,10 @@ class TelegramLogger():
             self.log.warning("ATENÇÃO!")
             self.log.warning("O bot de monitoramento não está devidamente configurado!")
             self.log.waning("Revise suas configurações.")
-
-        return envVarServ.getUsersId()
     
     #Getter dos id's carregados
     def getUsersId(self):
-        return self.__users_id
+        return self.__users
 
     def montAlertUnauthorizedMessage(self, time):
         str = "🛑 ATENÇÃO 🛑\nFoi detectado um acesso não autorizado."
@@ -157,8 +158,8 @@ class TelegramScheduler():
             self.createQueuePath()
 
         self.__telegramLogger = TelegramLogger()
+        schedule.every(1).minutes.do(self.__telegramLogger.loadUsers)
         schedule.every(1).minutes.do(self.readQueue)
-        schedule.every(1).minutes.do(self.__telegramLogger.loadUsersIDs)
     
     def createQueuePath(self):
         if not exists(join(getcwd(), "data")):
@@ -182,8 +183,11 @@ class TelegramScheduler():
                 
                 elif "unauthorized_color_alert" in fileName:
                     self.__telegramLogger.sendUnauthorizedColorAlertPhoto(id, dict)
-                
-            remove(fileName)
+            
+            #Se tem usuários para mandar, quer dizer que alguem recebeu
+            #entao da para apagar o arquivo
+            if len(self.__telegramLogger.getUsersId()) > 0:
+                remove(fileName)
 
 
     def runScheduledTask(self):
