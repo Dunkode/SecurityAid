@@ -9,6 +9,7 @@
 **Professor:** Marcos Roberto dos Santos  
 **Alunos:** Éderson Vidal Junior e Vitalino Pitt  
 
+##
 
 **Descrição:**  
 A internação em hospital é um momento delicado para o paciente apresentando-se como um momento delicado em sua vida.  Isolado dos seus vínculos sociais, o paciente torna-se “dependente” dos cuidados da equipe hospitalar.  
@@ -16,19 +17,47 @@ A internação em hospital é um momento delicado para o paciente apresentando-s
 Acompanhantes e visitantes apresentam-se como a rede de apoio familiar e social ao paciente, porém, é comum em grandes hospitais que estes perdem-se no labirinto de corredores e setores.  Juntando-se a isso encontram-se casos de pessoas mal “intencionadas” que podem estar ali para pequenos furtos ou outras práticas maliciosas. 
 Frente a essa realidade, buscou-se através desse projeto, evitar que pessoas circulem por setores sem autorização.  Através deste a equipe hospitalar pode auxiliar e monitorar as pessoas, facilitando o acesso rápido aos pacientes e evitando que elas circulem desnecessariamente pelo hospital.  
 
+##
 
 **Projeto:**  
 O projeto tem como finalidade automatizar o monitoramento de visitantes e acompanhantes através do cadastro de reconhecimento facial, cor do crachá e identificar se este está ou não no setor autorizado durante a visita.  Caso não esteja, será enviada uma notificação via Telegram, com o nome, foto da pessoa, data e hora do registro.   
 
+##
 
 **Requisitos:**  
 * Técnicas de processamento de imagens como redimensionamento, recorte e mudança de cores:  Ao cadastrar o visitante / acompanhante é salvo uma imagem com o nome deste para posterior técnica de reconhecimento facial.  
+
+<p align="center">
+  <img width="300" src="https://github.com/Dunkode/SecurityAid/blob/main/prints/Identifica%C3%A7%C3%A3o%20do%20rosto%20e%20sele%C3%A7%C3%A3o%20da%20%C3%A1rea%20de%20interesse.png">
+</p>
+
 * HaarCascade: Utilizado no reconhecimento do visitante/acompanhante e na identificação da cor crachá. É usado o HaarCascade disponibilizado pela biblioteca face_recognition.
 * Log: Serão geradas informações (nome do visitante, foto, data, hora do registro e permissão no local do registro) e arquivadas para posterior encaminhamento via Telegram.  
 * Identificação facial: Utilizado na hora do cadastro de visitantes/acompanhantes e na hora de identificar se os mesmos estão ou não no setor autorizado para visita.  
+
+<p align="center">
+  <img width="300" src="https://github.com/Dunkode/SecurityAid/blob/main/prints/Pessoa%20reconhecida%20e%20autorizada.png">
+  <img width="300" src="https://github.com/Dunkode/SecurityAid/blob/main/prints/Pessoa%20reconhecida%20e%20n%C3%A3o%20autorizada.png">
+</p>
+
 * Aplicado técnicas de binarização e detecção de bordas, aplicando correção morfológica nas imagens: Essas técnicas são utilizadas para descobrir qual a cor do crachá que o visitante está usando, onde é selecionado um Ponto de Interesse logo abaixo de seu rosto, e são aplicadas técnicas de detecção de bordas e binarização para identificar a cor usada.
+
+<p align="center">
+  <img width="300" src="https://github.com/Dunkode/SecurityAid/blob/main/prints/Analise%20das%20cores%20-%20Amarelo.png">
+  <img width="300" src="https://github.com/Dunkode/SecurityAid/blob/main/prints/Analise%20das%20cores%20-%20Azul.png">
+  <img width="300" src="https://github.com/Dunkode/SecurityAid/blob/main/prints/Analise%20das%20cores%20-%20Verde.png">
+  <img width="300" src="https://github.com/Dunkode/SecurityAid/blob/main/prints/Analise%20das%20cores%20-%20Vermelho.png"> 
+  <img width="300" src="https://github.com/Dunkode/SecurityAid/blob/main/prints/Area%20de%20interesse.png">
+</p>
+
 * Incluído skill referente a seleção de objetos por cores, o qual determina se o visitante está no setor autorizado.
 
+<p align="center">
+  <img width="300" src="https://github.com/Dunkode/SecurityAid/blob/main/prints/Mensagem%20de%20alerta%20de%20pessoa%20n%C3%A3o%20autorizada.png">
+  <img width="300" src="https://github.com/Dunkode/SecurityAid/blob/main/prints/Pessoa%20reconhecida%20e%20com%20cor%20n%C3%A3o%20autorizada.png">
+</p>
+
+##
 
 **Imagens:**  
 Na pasta “prints” será possível encontrar as imagens citadas abaixo, comprovando algumas funcionalidades do projeto.  
@@ -43,6 +72,7 @@ Na pasta “prints” será possível encontrar as imagens citadas abaixo, compr
 * Pessoa reconhecida e com cor não autorizada;  
 * Pessoa reconhecida e não autorizada;  
 
+##
 
 **Bibliotecas Utilizadas:**  
 anyio==3.6.2  
@@ -85,3 +115,5 @@ typing_extensions==4.4.0
 tzdata==2022.6  
 tzlocal==4.2  
 urllib3==1.26.12  
+
+##
