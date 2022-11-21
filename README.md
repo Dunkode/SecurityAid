@@ -75,6 +75,7 @@ Na pasta “prints” será possível encontrar as imagens citadas abaixo, compr
 ##
 
 **Bibliotecas Utilizadas:**  
+~~~
 anyio==3.6.2  
 APScheduler==3.9.1  
 asyncio==3.4.3  
@@ -115,5 +116,5 @@ typing_extensions==4.4.0
 tzdata==2022.6  
 tzlocal==4.2  
 urllib3==1.26.12  
-
+~~~
 ##
